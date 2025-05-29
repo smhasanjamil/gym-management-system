@@ -196,7 +196,7 @@ password: 123456
 
 This project supports manual API testing using Postman.
 
-### Use Postman/Thunder Client to Hit API Endpoints
+### Use Postman to Hit API Endpoints
 
 - Base URL: `https://gym-management-system-ten.vercel.app/api/v1`
 - Test endpoints like:
