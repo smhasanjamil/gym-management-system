@@ -194,4 +194,87 @@ email: admin@gmail.com
 password: 123456
 ```
 
-Test the app via Postman using the above credentials.
+This project supports manual API testing using Postman.
+
+### Use Postman/Thunder Client to Hit API Endpoints
+
+- Base URL: `https://gym-management-system-ten.vercel.app/api/v1`
+- Test endpoints like:
+
+####  Auth
+
+- `POST /auth/register` – Register a new trainee
+Input syntax
+```json
+{
+    "name": "Trainee1",
+    "email": "tarinee1@gmail.com",
+    "password": "123456"
+}
+```
+- `POST /auth/login` – Log in and receive JWT token
+Input syntax
+```json
+{  
+    "email": "admin@gmail.com",
+    "password": "123456"
+}
+```
+####  User
+
+- `POST /users/create-trainer` – Create a trainer
+Input syntax
+```json
+{
+    "name": "Trainer1",
+    "email": "trainer1@gmail.com",
+    "password": "123456"
+}
+```
+- `PATCH /users/trainers/:id` – Update trainer details
+Input syntax
+```json
+{
+    "name": "User One"
+}
+```
+- `PATCH /users/trainee/:id` – Update trainee details
+Input syntax
+```json
+{
+    "name": "Traine One"
+}
+```
+- `DELETE /users/trainers/:id` – Delete a trainer
+- `DELETE /users/trainee/:id` – Delete a trainee
+
+####  Class
+
+- `GET /class/trainer/:id` – Get all classes for a specific trainer
+- `POST /class/create` – Create a new class schedule
+Input syntax
+```jshon
+{
+    "name": "Evening Stretch",
+    "date": "2025-05-31 11:30 AM",
+    "trainer": "68382a97735b48d185d82810"
+}
+```
+- `POST /class/book-class` – Book a class as a trainee
+Input syantax
+```json
+{
+    "traineeId": "68382926735b48d185d827ef",
+    "classId": "68389414be7bf12e7ad7b9b4"
+}
+```
+- `DELETE /class/cancel-class` – Cancel a booked class
+Input syntax
+```json
+{
+    "classId": "68389414be7bf12e7ad7b9b4",
+    "traineeId": "68382926735b48d185d827ef"
+}
+```
+
+A robust role-based backend system for managing gym operations including class scheduling, trainer assignment, and trainee bookings. Built with TypeScript, Express.js, Mongoose, and JWT Authentication, following a scalable Modular Architecture.
