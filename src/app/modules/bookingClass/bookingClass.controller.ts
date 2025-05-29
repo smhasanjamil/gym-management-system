@@ -7,7 +7,10 @@ import { bookingServices } from "./bookingClass.service";
 const createBooking = catchAsync(async (req, res) => {
   const { classId, traineeId } = req.body;
 
-  const result = await bookingServices.createBookingIntoDB({ classId, traineeId });
+  const result = await bookingServices.createBookingIntoDB({
+    classId,
+    traineeId,
+  });
 
   //   send response
   sendResponse(res, {
@@ -18,6 +21,22 @@ const createBooking = catchAsync(async (req, res) => {
   });
 });
 
+// Cancel booking
+const cancelBooking = catchAsync(async (req, res) => {
+  const { classId, traineeId } = req.body;
+
+  const result = await bookingServices.cancelBookingFromDB(classId, traineeId);
+
+  //   send response
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: "Booking cancel successfully",
+    data: result,
+  });
+});
+
 export const bookingControllers = {
   createBooking,
+  cancelBooking,
 };

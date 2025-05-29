@@ -56,6 +56,33 @@ const createBookingIntoDB = async (data: IBooking) => {
   return booking;
 };
 
+
+//  Cancel Booking
+const cancelBookingFromDB = async (classId: string, traineeId: string) => {
+  // Check if trainee exists
+  const traineeExists = await UserModel.exists({ _id: traineeId });
+  if (!traineeExists) {
+    throw new Error("Trainee not found");
+  }
+
+  // Check if booking exists
+  const booking = await BookingModel.findOne({ classId, traineeId });
+  if (!booking) {
+    throw new Error("Booking not found");
+  }
+
+  // Remove trainee from class
+  await ClassScheduleModel.findByIdAndUpdate(classId, {
+    $pull: { trainees: traineeId },
+  });
+
+  // Delete booking
+  await BookingModel.deleteOne({ _id: booking._id });
+
+  return { message: "Booking cancelled successfully" };
+};
+
 export const bookingServices = {
   createBookingIntoDB,
+  cancelBookingFromDB
 };

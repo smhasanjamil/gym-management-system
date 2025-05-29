@@ -9,6 +9,12 @@ import { bookingClassValidations } from "../bookingClass/bookingClass.validation
 
 const router = Router();
 
+router.get(
+  "/trainer/:trainerId",
+  auth(USER_ROLE.admin, USER_ROLE.trainer),
+  classScheduleControllers.getClassesByTrainer
+);
+
 router.post(
   "/create",
   auth(USER_ROLE.admin),
@@ -23,10 +29,10 @@ router.post(
   bookingControllers.createBooking
 );
 
-router.get(
-  "/trainer/:trainerId",
-  auth(USER_ROLE.admin, USER_ROLE.trainer),
-  classScheduleControllers.getClassesByTrainer
+router.delete(
+  "/cancel-class",
+  auth(USER_ROLE.trainee, USER_ROLE.admin),
+  bookingControllers.cancelBooking
 );
 
 export const ClassScheduleRoutes = router;
