@@ -1,1 +1,197 @@
-# gym-management-system
+
+# Gym Class Scheduling and Membership Management System
+
+A role-based backend application built with TypeScript, Node.js, Express.js, Mongoose, and MongoDB to efficiently manage gym operations such as class scheduling, trainer assignment, and trainee bookings. This system ensures a secure, scalable, and organized workflow for gyms, following a modular architecture and JWT-based authentication.
+## Live Server Link
+
+[Click Here to View the Live Server](https://gym-management-system-ten.vercel.app/)
+
+## Project Overview
+
+This system is designed to automate and streamline gym management tasks by defining three user roles: Admin, Trainer, and Trainee, each with distinct permissions:
+
+- **Admins** manage trainers, create and schedule classes (up to 5 per day), and assign trainers to these classes.
+- **Trainers** can view their assigned schedules but cannot manage other resources.
+- **Trainees** can create their profiles and book classes (up to 10 trainees per class) with time conflict and limit checks.
+
+The system enforces strict business rules, provides comprehensive error handling, and protects all endpoints using JWT authentication with role-based authorization.
+## Key Features
+
+### Role-Based Access
+
+- **JWT Authentication** for secure login
+- Middleware to enforce **role-specific permissions**
+
+### Admin Functionality
+
+- Create/manage trainers
+- Schedule up to **5 classes per day**
+- Assign trainers to class schedules
+
+### Trainer Functionality
+
+- View own assigned class schedules
+- Cannot modify users or schedules
+
+### Trainee Functionality
+
+- Register and manage own profile
+- Book available classes (up to **10 trainees per class**)
+- Cancel existing bookings
+- Prevent double-booking in the same time slot
+
+### Business Logic & Constraints
+
+- Max 5 class schedules per day
+- Each class lasts 2 hours
+- Max 10 trainees per class schedule
+- Conflict detection for time-slot double bookings
+- Restriction on overbooking and overscheduling
+
+### Error Handling
+
+- **Global error middleware** for structured error responses
+## Relational Diagram
+
+[Click Here to View the Relational Diagram](https://gym-management-system-ten.vercel.app/)
+## Technology Stack
+
+- TypeScript  
+- Node.js  
+- Express.js  
+- MongoDB  
+- Mongoose  
+- JWT
+
+## API Endpoints
+
+### Auth
+
+- `POST /api/v1/auth/register` – Create user/trainee a user.
+- `POST /api/v1/auth/login` – Login
+
+### User
+
+- `POST /api/v1/users/create-trainer` – Create Trainer
+- `PATCH /api/v1/users/trainers/:id` – Update Trainer
+- `PATCH /api/v1/users/trainee/:id` – Update Trainee
+- `DELETE /api/v1/users/trainers/:id` – Delete Trainer
+- `DELETE /api/v1/users/trainee/:id` – Delete Trainee
+
+### Class
+
+- `GET /api/v1/class/trainer/:id` – Get specific trainer's all classes.
+- `POST /api/v1/class/create` – Create Class Schedule
+- `POST /api/v1/class/book-class` – Book class
+- `DELETE /api/v1/class/cancel-class` – Cancel Class Booking
+## Database Schema
+
+### User Schema
+```ts
+{
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+    },
+
+    password: {
+      type: String,
+      required: true,
+    },
+
+    role: {
+      type: String,
+      enum: ["admin", "trainer", "trainee"],
+      default: "trainee",
+    },
+  },
+  {
+    timestamps: true,
+  }
+  ```
+
+  ### Class Cheduling Schema
+
+  ```ts
+  {
+  name: { type: String, required: true },
+  date: { type: Date, required: true },
+  duration: { type: Number, default: 120 },
+  trainer: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  trainees: [{ type: Schema.Types.ObjectId, ref: "User", required: false }],
+}
+  ```
+
+  ### Booking Schema
+
+  ```ts
+  {
+    classId: {
+      type: Schema.Types.ObjectId,
+      ref: "ClassSchedule",
+      required: true,
+    },
+
+    traineeId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  },
+  { timestamps: true }
+  ```
+## Admin Credentials
+
+```ts
+email: admin@gmail.com
+password: 123456
+```
+## Run Locally
+
+### Installation
+
+Clone git repository:
+```
+git clone https://github.com/smhasanjamil/gym-management-system.git
+cd gym-management-system
+npm install
+npm run dev
+```
+
+Create `.env` file in the root:
+```ts
+# NODE_ENV=development
+NODE_ENV=production
+PORT=5000
+
+DATABASE_URL=
+BCRYPT_SALT_ROUNDS=12
+
+# jwt
+JWT_ACCESS_SECRET=9d0695dc12e37a0aff4c5a0b17fdc1d494f72c78d3329eed8a23b64554620bc3
+JWT_ACCESS_EXPIRES_IN=7d
+JWT_REFRESH_SECRET=4d6b2efd99a999cee14f1b63b62cb85f2dcf80ca43d57eb2388196940e906f5e97b61becd8064694aec3e58b863f3682abe77de44a4c2a2af5d9a2b77000ab92
+JWT_REFRESH_EXPIRES_IN=1y
+```
+## Live Hosting Link
+
+[Click Here to View the Live Server](https://gym-management-system-ten.vercel.app/)
+
+## Postman documentation
+
+[Click Here to View the Postman documentation](https://documenter.getpostman.com/view/38506814/2sB2qfAywD)
+
+## Testing
+
+### Admin Credentials for testing
+
+```ts
+email: admin@gmail.com
+password: 123456
+```
+
+Test the app via Postman using the above credentials.
