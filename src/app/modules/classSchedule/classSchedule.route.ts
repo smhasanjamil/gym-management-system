@@ -23,4 +23,10 @@ router.post(
   bookingControllers.createBooking
 );
 
+router.get(
+  "/trainer/:trainerId",
+  auth(USER_ROLE.admin, USER_ROLE.trainer),
+  classScheduleControllers.getClassesByTrainer
+);
+
 export const ClassScheduleRoutes = router;

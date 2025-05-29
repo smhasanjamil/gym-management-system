@@ -31,7 +31,7 @@ const createClassScheduleIntoDB = async (inputData: IClassSchedule) => {
     throw new Error(`Only ${MAX_CLASSES_PER_DAY} classes allowed per day.`);
   }
 
-  //  Create class 
+  //  Create class
   const result = await ClassScheduleModel.create({
     ...inputData,
     duration,
@@ -40,6 +40,20 @@ const createClassScheduleIntoDB = async (inputData: IClassSchedule) => {
   return result;
 };
 
+// Get all classes for specific trainer
+const getClassesByTrainerId = async (trainerId: string) => {
+  const classes = await ClassScheduleModel.find({ trainer: trainerId })
+    .populate("trainees", "name email")
+    .populate("trainer", "name email");
+
+  if (!classes || classes.length === 0) {
+    throw new Error("No class schedules found for this trainer.");
+  }
+
+  return classes;
+};
+
 export const classScheduleServices = {
   createClassScheduleIntoDB,
+  getClassesByTrainerId,
 };
