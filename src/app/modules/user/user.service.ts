@@ -7,6 +7,17 @@ const createUserIntoDB = async (user: TUser) => {
   return result;
 };
 
+// Update Trainee
+const updateTraineeById = async (id: string, data: Partial<TUser>) => {
+  const trainee = await UserModel.findOneAndUpdate(
+    { _id: id, role: "trainee" },
+    data,
+    { new: true }
+  );
+  if (!trainee) throw new Error("Trainee not found");
+  return trainee;
+};
+
 // Update Trainer
 const updateTrainerById = async (id: string, data: Partial<TUser>) => {
   const trainer = await UserModel.findOneAndUpdate(
@@ -18,6 +29,13 @@ const updateTrainerById = async (id: string, data: Partial<TUser>) => {
   return trainer;
 };
 
+// Delete Trainee
+const deleteTraineeById = async (id: string) => {
+  const result = await UserModel.findOneAndDelete({ _id: id, role: "trainee" });
+  if (!result) throw new Error("Trainee not found");
+  return result;
+};
+
 // Delete Trainer
 const deleteTrainerById = async (id: string) => {
   const result = await UserModel.findOneAndDelete({ _id: id, role: "trainer" });
@@ -27,6 +45,8 @@ const deleteTrainerById = async (id: string) => {
 
 export const userServices = {
   createUserIntoDB,
+  updateTraineeById,
   updateTrainerById,
   deleteTrainerById,
+  deleteTraineeById,
 };

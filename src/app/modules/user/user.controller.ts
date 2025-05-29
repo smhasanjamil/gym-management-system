@@ -30,6 +30,21 @@ const createTrainer = catchAsync(async (req, res) => {
   });
 });
 
+// Update Trainee
+const updateTrainee = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const updateData = req.body;
+
+  const result = await userServices.updateTraineeById(id, updateData);
+
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: "Trainee updated successfully",
+    data: result,
+  });
+});
+
 // Update Trainer
 const updateTrainer = catchAsync(async (req, res) => {
   const { id } = req.params;
@@ -41,6 +56,20 @@ const updateTrainer = catchAsync(async (req, res) => {
     statusCode: status.OK,
     success: true,
     message: "Trainer updated successfully",
+    data: result,
+  });
+});
+
+// Delete Trainee
+const deleteTrainee = catchAsync(async (req, res) => {
+  const { id } = req.params;
+
+  const result = await userServices.deleteTraineeById(id);
+
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: "Trainee deleted successfully",
     data: result,
   });
 });
@@ -62,6 +91,8 @@ const deleteTrainer = catchAsync(async (req, res) => {
 export const userControllers = {
   createUser,
   createTrainer,
+  updateTrainee,
   updateTrainer,
+  deleteTrainee,
   deleteTrainer,
 };

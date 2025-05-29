@@ -19,11 +19,25 @@ router.post(
   validateRequest(userValidations.createUserValidationSchema),
   userControllers.createTrainer
 );
+
+router.patch(
+  "/trainee/:id",
+  auth(USER_ROLE.admin, USER_ROLE.trainee),
+  validateRequest(userValidations.updateUserValidationSchema),
+  userControllers.updateTrainee
+);
+
 router.patch(
   "/trainers/:id",
   auth(USER_ROLE.admin),
   validateRequest(userValidations.updateUserValidationSchema),
   userControllers.updateTrainer
+);
+
+router.delete(
+  "/trainee/:id",
+  auth(USER_ROLE.admin, USER_ROLE.trainee),
+  userControllers.deleteTrainee
 );
 
 router.delete(
