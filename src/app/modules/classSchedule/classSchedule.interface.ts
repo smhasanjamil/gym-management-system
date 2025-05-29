@@ -5,5 +5,5 @@ export interface IClassSchedule {
   date: Date;
   duration: number;
   trainer: Types.ObjectId;
-  trainees: Types.ObjectId[];
+  trainees?: Types.ObjectId[];
 }

@@ -1,15 +1,28 @@
 import mongoose from "mongoose";
 import { z } from "zod";
+import { DateTime } from "luxon";
 
 const classScheduleSchema = z.object({
   body: z.object({
     name: z.string().min(1, "Class name is required"),
+
     date: z
       .string()
-      .refine((val) => !isNaN(Date.parse(val)), {
-        message: "Invalid date format",
-      })
-      .transform((val) => new Date(val)),
+      .refine(
+        (val) => {
+          const dt = DateTime.fromFormat(val, "yyyy-MM-dd hh:mm a", {
+            zone: "Asia/Dhaka",
+          });
+          return dt.isValid;
+        },
+        { message: "Invalid date format. Use 'YYYY-MM-DD hh:mm AM/PM'" }
+      )
+      .transform((val) =>
+        DateTime.fromFormat(val, "yyyy-MM-dd hh:mm a", { zone: "Asia/Dhaka" })
+          .toUTC()
+          .toJSDate()
+      ),
+
     duration: z
       .number()
       .int()
@@ -25,7 +38,8 @@ const classScheduleSchema = z.object({
           message: "Invalid MongoDB ObjectId in trainees array",
         })
       )
-      .max(10, "Maximum 10 trainees allowed per class schedule"),
+      .max(10, "Maximum 10 trainees allowed per class schedule")
+      .optional(),
   }),
 });
 

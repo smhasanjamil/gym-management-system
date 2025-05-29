@@ -6,7 +6,7 @@ const classScheduleSchema = new Schema<IClassSchedule>({
   date: { type: Date, required: true },
   duration: { type: Number, default: 120 },
   trainer: { type: Schema.Types.ObjectId, ref: "User", required: true },
-  trainees: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  trainees: [{ type: Schema.Types.ObjectId, ref: "User", required: false }],
 });
 
 export const ClassScheduleModel = model<IClassSchedule>(
