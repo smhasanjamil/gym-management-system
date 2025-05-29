@@ -1,3 +1,4 @@
+import { UserModel } from "../user/user.model";
 import { IClassSchedule } from "./classSchedule.interface";
 import { ClassScheduleModel } from "./classSchedule.model";
 
@@ -6,6 +7,12 @@ const DEFAULT_DURATION = 120;
 
 // Create Class
 const createClassScheduleIntoDB = async (inputData: IClassSchedule) => {
+   // 1. Check if trainer exists
+  const trainerExists = await UserModel.exists({ _id: inputData.trainer });
+  if (!trainerExists) {
+    throw new Error("Trainer not found in database.");
+  }
+
   const duration = inputData.duration ?? DEFAULT_DURATION;
   const newStart = new Date(inputData.date);
   const newEnd = new Date(newStart.getTime() + duration * 60000);
