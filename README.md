@@ -53,7 +53,7 @@ The system enforces strict business rules, provides comprehensive error handling
 - **Global error middleware** for structured error responses
 ## Relational Diagram
 
-[Click Here to View the Relational Diagram](https://gym-management-system-ten.vercel.app/)
+[Click Here to View the Relational Diagram](https://drive.google.com/file/d/1vYxd2r7MkmQxmsWZhNGQ_3Y7UIqS1pHN/view?usp=sharing)
 ## Technology Stack
 
 - TypeScript  
