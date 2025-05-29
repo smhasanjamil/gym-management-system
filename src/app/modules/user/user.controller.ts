@@ -30,7 +30,38 @@ const createTrainer = catchAsync(async (req, res) => {
   });
 });
 
+// Update Trainer
+const updateTrainer = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const updateData = req.body;
+
+  const result = await userServices.updateTrainerById(id, updateData);
+
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: "Trainer updated successfully",
+    data: result,
+  });
+});
+
+// Delete Trainer
+const deleteTrainer = catchAsync(async (req, res) => {
+  const { id } = req.params;
+
+  const result = await userServices.deleteTrainerById(id);
+
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: "Trainer deleted successfully",
+    data: result,
+  });
+});
+
 export const userControllers = {
   createUser,
   createTrainer,
+  updateTrainer,
+  deleteTrainer,
 };

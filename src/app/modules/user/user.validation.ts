@@ -24,6 +24,19 @@ const createUserValidationSchema = z.object({
   }),
 });
 
+const updateUserValidationSchema = z.object({
+  body: z.object({
+    name: z.string().min(2, "Please enter a valid name").optional(),
+    email: z.string().email("Invalid email format").optional(),
+    password: z
+      .string()
+      .min(6, "Password must be at least 6 characters long")
+      .optional(),
+    role: z.enum(["admin", "trainer", "trainee"]).optional(),
+  }),
+});
+
 export const userValidations = {
   createUserValidationSchema,
+  updateUserValidationSchema,
 };

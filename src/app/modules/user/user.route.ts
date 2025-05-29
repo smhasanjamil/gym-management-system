@@ -19,5 +19,17 @@ router.post(
   validateRequest(userValidations.createUserValidationSchema),
   userControllers.createTrainer
 );
+router.patch(
+  "/trainers/:id",
+  auth(USER_ROLE.admin),
+  validateRequest(userValidations.updateUserValidationSchema),
+  userControllers.updateTrainer
+);
+
+router.delete(
+  "/trainers/:id",
+  auth(USER_ROLE.admin),
+  userControllers.deleteTrainer
+);
 
 export const UserRoutes = router;
