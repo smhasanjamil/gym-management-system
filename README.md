@@ -15,42 +15,6 @@ This system is designed to automate and streamline gym management tasks by defin
 - **Trainees** can create their profiles and book classes (up to 10 trainees per class) with time conflict and limit checks.
 
 The system enforces strict business rules, provides comprehensive error handling, and protects all endpoints using JWT authentication with role-based authorization.
-## Key Features
-
-### Role-Based Access
-
-- **JWT Authentication** for secure login
-- Middleware to enforce **role-specific permissions**
-
-### Admin Functionality
-
-- Create/manage trainers
-- Schedule up to **5 classes per day**
-- Assign trainers to class schedules
-
-### Trainer Functionality
-
-- View own assigned class schedules
-- Cannot modify users or schedules
-
-### Trainee Functionality
-
-- Register and manage own profile
-- Book available classes (up to **10 trainees per class**)
-- Cancel existing bookings
-- Prevent double-booking in the same time slot
-
-### Business Logic & Constraints
-
-- Max 5 class schedules per day
-- Each class lasts 2 hours
-- Max 10 trainees per class schedule
-- Conflict detection for time-slot double bookings
-- Restriction on overbooking and overscheduling
-
-### Error Handling
-
-- **Global error middleware** for structured error responses
 ## Relational Diagram
 
 [Click Here to View the Relational Diagram](https://drive.google.com/file/d/1vYxd2r7MkmQxmsWZhNGQ_3Y7UIqS1pHN/view?usp=sharing)
@@ -62,28 +26,214 @@ The system enforces strict business rules, provides comprehensive error handling
 - MongoDB  
 - Mongoose  
 - JWT
+- Zod
+- Postman
+## Admin Credentials
 
+```ts
+email: admin@gmail.com
+password: 123456
+```
+
+### Trainer Credentials
+```ts
+email: rifat@gmail.com
+password: 123456
+```
+
+### Trainee Credentials
+```ts
+email: sajib@gmail.com
+password: 123456
+```
 ## API Endpoints
 
 ### Auth
 
-- `POST /api/v1/auth/register` – Create user/trainee a user.
+**1. Create a Trainee**
+
+- `POST /api/v1/auth/register` – Signup as trainee
+
+Description: Password must be at least 6 characters long. 
+
+**Input:**
+```json
+{
+    "name": "Khalid",
+    "email": "khalid@gmail.com",
+    "password": "123456"
+}
+```
+
+**2. Login**
+
 - `POST /api/v1/auth/login` – Login
 
-### User
+Description: This login path is for admin, trainer, and trainee.
 
-- `POST /api/v1/users/create-trainer` – Create Trainer
+**Input:**
+```json
+{
+    "email": "admin@gmail.com",
+    "password": "123456"
+}
+```
+
+### User Management
+
+**1. Create a trainer**
+
+- `POST /api/v1/users/create-trainer` – Create a Trainer
+
+**Input:**
+
+```json
+{
+    "name": "Rahim",
+    "email": "rahim@gmail.com",
+    "password": "123456"
+}
+```
+
+**Role:**
+
+- Only **Admin** can create a trainer.
+
+**2. Update Trainer**
+
 - `PATCH /api/v1/users/trainers/:id` – Update Trainer
+
+Description: Trainer ID must be valid and already exist in the database.
+
+**Input:**
+
+```json
+{
+    "name": "Karim",
+    "email": "karim@gmail.com"
+}
+```
+
+**Role:**
+
+- Only **admin** can update a trainer data
+
+**3. Update Trainee** 
+
 - `PATCH /api/v1/users/trainee/:id` – Update Trainee
+
+Description: Trainee ID must be valid and already exist in the database.
+
+**Input:**
+
+```json
+{
+    "name": "Pitu",
+    "email": "pitu@gmail.com"
+}
+```
+**Role:**
+
+- **Admin** and **trainee** both can update trainee data.
+
+**4. Delete Trainer**
+
 - `DELETE /api/v1/users/trainers/:id` – Delete Trainer
+
+Description: Trainer ID must be valid and already exist in the database.
+
+**Role:**
+
+- Only **admin** can delete a trainer.
+
+**5. Delete Trainee**
+
 - `DELETE /api/v1/users/trainee/:id` – Delete Trainee
 
-### Class
+Description: Trainee ID must be valid and already exist in the database.
 
-- `GET /api/v1/class/trainer/:id` – Get specific trainer's all classes.
+**Role:**
+
+- **Admin** and **trainee** both can delete trainee.
+
+### Class Management
+
+**1. Create and schedule a class**
+
 - `POST /api/v1/class/create` – Create Class Schedule
+
+    - Date Format: `'YYYY-MM-DD hh:mm AM/PM'`
+    - A valid `trainer ID` (that exists in the database)  must be provided while creating a class schedule for assaign trainer.
+    - Don't need to provide an end time, as each class duration is fixed to **2 hours (120 minutes)** in system.
+    - Each day can have a maximum of **5 class schedules**.
+    - Maximum of **10 trainees** per class schedule.
+
+**Input:**
+```json
+{
+    "name": "Evening Stretch",
+    "date": "2025-05-31 11:30 AM",
+    "trainer": "68382a97735b48d185d82810"
+}
+```
+
+**Role:**
+
+- Only **admin** can create a class schedule
+
+**2. Get specific trainer's all classes and trainee who booked these class.**
+
+- `GET /api/v1/class/trainer/:id` – Trainer can view assigned class.
+
+Description: Trainer ID must be valid and already exist in the database.
+
+**Role:**
+
+- **Admin** and **trainer** both can view.
+
+**3. Book a class**
+
 - `POST /api/v1/class/book-class` – Book class
+
+Description: Must provide valid **class ID** and **trainee ID** that already exist in the database.
+
+- When a class is booked:
+    - Trainee ID will be added to the class's `trainees` list.
+    - Each class can have a maximum of **10 trainees**.
+    - Booking information will be saved to the database.
+    - A trainee **cannot book another class at the same time**.
+
+**Input:**
+
+```json
+{
+    "traineeId": "68382926735b48d185d827ef",
+    "classId": "68389414be7bf12e7ad7b9b4"
+}
+```
+
+**Role:**
+
+- Only **trainee** can book a class.
+
+**4. Cancel class schedule booking**
+
+Description: You must provide a valid **class ID** (of the class that was booked) and a valid **trainee ID** to cancel a class booking.
+
 - `DELETE /api/v1/class/cancel-class` – Cancel Class Booking
+
+**Input:**
+
+```json
+{
+    "classId": "68389414be7bf12e7ad7b9b4",
+    "traineeId": "68382926735b48d185d827ef"
+}
+```
+
+**Role:**
+
+- **Admin** and **trainee** both can cancel booking.
 ## Database Schema
 
 ### User Schema
@@ -144,12 +294,6 @@ The system enforces strict business rules, provides comprehensive error handling
   },
   { timestamps: true }
   ```
-## Admin Credentials
-
-```ts
-email: admin@gmail.com
-password: 123456
-```
 ## Run Locally
 
 ### Installation
@@ -196,85 +340,36 @@ password: 123456
 
 This project supports manual API testing using Postman.
 
-### Use Postman to Hit API Endpoints
+### Use Postman/Thunder Client to Hit API Endpoints
 
-- Base URL: `https://gym-management-system-ten.vercel.app/api/v1`
+- Base URL: `https://gym-management-system-ten.vercel.app`
 - Test endpoints like:
 
 ####  Auth
 
-- `POST /auth/register` – Register a new trainee
-Input syntax
-```json
-{
-    "name": "Trainee1",
-    "email": "tarinee1@gmail.com",
-    "password": "123456"
-}
-```
-- `POST /auth/login` – Log in and receive JWT token
-Input syntax
-```json
-{  
-    "email": "admin@gmail.com",
-    "password": "123456"
-}
-```
+- `POST /api/v1/auth/register` – Register a new trainee
+
+- `POST /api/v1/auth/login` – Log in and receive JWT token
+
 ####  User
 
-- `POST /users/create-trainer` – Create a trainer
-Input syntax
-```json
-{
-    "name": "Trainer1",
-    "email": "trainer1@gmail.com",
-    "password": "123456"
-}
-```
-- `PATCH /users/trainers/:id` – Update trainer details
-Input syntax
-```json
-{
-    "name": "User One"
-}
-```
-- `PATCH /users/trainee/:id` – Update trainee details
-Input syntax
-```json
-{
-    "name": "Traine One"
-}
-```
-- `DELETE /users/trainers/:id` – Delete a trainer
-- `DELETE /users/trainee/:id` – Delete a trainee
+- `POST /api/v1/users/create-trainer` – Create a trainer
+
+- `PATCH /api/v1/users/trainers/:id` – Update trainer details
+
+- `PATCH /api/v1/users/trainee/:id` – Update trainee details
+
+- `DELETE /api/v1/users/trainers/:id` – Delete a trainer
+- `DELETE /api/v1/users/trainee/:id` – Delete a trainee
 
 ####  Class
 
-- `GET /class/trainer/:id` – Get all classes for a specific trainer
-- `POST /class/create` – Create a new class schedule
-Input syntax
-```jshon
-{
-    "name": "Evening Stretch",
-    "date": "2025-05-31 11:30 AM",
-    "trainer": "68382a97735b48d185d82810"
-}
-```
-- `POST /class/book-class` – Book a class as a trainee
-Input syantax
-```json
-{
-    "traineeId": "68382926735b48d185d827ef",
-    "classId": "68389414be7bf12e7ad7b9b4"
-}
-```
-- `DELETE /class/cancel-class` – Cancel a booked class
-Input syntax
-```json
-{
-    "classId": "68389414be7bf12e7ad7b9b4",
-    "traineeId": "68382926735b48d185d827ef"
-}
-```
+- `GET /api/v1/class/trainer/:id` – Get all classes for a specific trainer
+- `POST /api/v1/class/create` – Create a new class schedule
+
+- `POST /api/v1/class/book-class` – Book a class as a trainee
+
+- `DELETE /api/v1/class/cancel-class` – Cancel a booked class
+
 
 A robust role-based backend system for managing gym operations including class scheduling, trainer assignment, and trainee bookings. Built with TypeScript, Express.js, Mongoose, and JWT Authentication, following a scalable Modular Architecture.
